@@ -41,13 +41,12 @@
    });
 
    const PORT = process.env.PORT || 5000;
-  const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`서버 실행 중: http://localhost:${PORT}`);
-  });
-}
+  if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+      console.log(`서버 실행 중: http://localhost:${PORT}`);
+    });
+  }
 
-// Vercel용
-module.exports = app;
+  // Vercel용
+  module.exports = app;
