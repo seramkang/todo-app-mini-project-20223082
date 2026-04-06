@@ -3,6 +3,16 @@ import axios from 'axios';
 
 const API = '/api/todos';
 
+export const getTodos = async () => {
+  const res = await axios.get(API);
+  return res.data;
+};
+
+export const addTodo = async (todo) => {
+  const res = await axios.post(API, { text: todo });
+  return res.data;
+};
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
