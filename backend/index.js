@@ -7,10 +7,19 @@
    app.use(cors());
    app.use(express.json());
 
-   mongoose.connect(process.env.MONGODB_URI)
-     .then(() => console.log('MongoDB 연결 성공'))
-     .catch(err => console.log(err));
+  let isConnected = false;
 
+const connectDB = async () => {
+  if (isConnected) return;
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log('MongoDB 연결 성공');
+  } catch (err) {
+    console.error(err);
+  }
+};
    // Todo 스키마
    const todoSchema = new mongoose.Schema({
      title: { type: String, required: true },
