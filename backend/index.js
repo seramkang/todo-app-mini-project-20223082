@@ -40,5 +40,4 @@ require('dotenv').config();
      res.json({ message: '삭제 완료' });
    });
 
-   const PORT = process.env.PORT || 5000;
-   app.listen(PORT, () => console.log(`서버 실행 중: http://localhost:${PORT}`));
+   module.exports = app;
