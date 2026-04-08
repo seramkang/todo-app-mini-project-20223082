@@ -30,7 +30,7 @@ const todoSchema = new mongoose.Schema({
 const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
 
 // API
-app.get('/api/todos', async (req, res) => {
+app.get('/todos', async (req, res) => {
   try {
     await connectDB();
     const todos = await Todo.find();
@@ -40,7 +40,7 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
-app.post('/api/todos', async (req, res) => {
+app.post('/todos', async (req, res) => {
   try {
     await connectDB();
     const newTodo = new Todo({ title: req.body.title });
