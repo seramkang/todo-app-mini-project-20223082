@@ -1,52 +1,54 @@
-   require('dotenv').config();
-   const express = require('express');
-   const mongoose = require('mongoose');
-   const cors = require('cors');
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
-   const app = express();
-   app.use(cors());
-   app.use(express.json());
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-   mongoose.connect(process.env.MONGODB_URI)
-     .then(() => console.log('MongoDB 연결 성공'))
-     .catch(err => console.log(err));
+// DB 연결 (serverless용)
+let isConnected = false;
 
-   // Todo 스키마
-   const todoSchema = new mongoose.Schema({
-     title: { type: String, required: true },
-     completed: { type: Boolean, default: false }
-   });
-   const Todo = mongoose.model('Todo', todoSchema);
+const connectDB = async () => {
+  if (isConnected) return;
 
-   // API 엔드포인트
-   app.get('/api/todos', async (req, res) => {
-     const todos = await Todo.find();
-     res.json(todos);
-   });
-
-   app.post('/api/todos', async (req, res) => {
-     const newTodo = new Todo({ title: req.body.title });
-     await newTodo.save();
-     res.json(newTodo);
-   });
-
-   app.put('/api/todos/:id', async (req, res) => {
-     const todo = await Todo.findByIdAndUpdate(req.params.id, { completed: req.body.completed }, { new: true });
-     res.json(todo);
-   });
-
-   app.delete('/api/todos/:id', async (req, res) => {
-     await Todo.findByIdAndDelete(req.params.id);
-     res.json({ message: '삭제 완료' });
-   });
-
-   const PORT = process.env.PORT || 5000;
-
-  if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-      console.log(`서버 실행 중: http://localhost:${PORT}`);
-    });
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log('MongoDB 연결 성공');
+  } catch (err) {
+    console.error(err);
   }
+};
 
-  // Vercel용
-  module.exports = app;
+// 모델
+const todoSchema = new mongoose.Schema({
+  title: String,
+  completed: Boolean,
+});
+const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
+
+// API
+app.get('/api/todos', async (req, res) => {
+  try {
+    await connectDB();
+    const todos = await Todo.find();
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/todos', async (req, res) => {
+  try {
+    await connectDB();
+    const newTodo = new Todo({ title: req.body.title });
+    await newTodo.save();
+    res.json(newTodo);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = app;
