@@ -1,7 +1,0 @@
-{
-  "version": 2,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://<본인의-백엔드-주소>.vercel.app/api/$1" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}
